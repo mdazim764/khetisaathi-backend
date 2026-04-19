@@ -16,7 +16,7 @@ app.use(express.json());
 // --- Gemini AI Setup ---
 const geminiApiKey = process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(geminiApiKey);
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
 
 const generationConfig = {
   temperature: 1,
@@ -69,7 +69,7 @@ Ensure that the values are descriptive (for example, "Alluvial", "Tropical", "Re
 async function getWeatherData(location, date) {
   try {
     const url = `${WEATHER_API_BASE}/forecast.json?key=${WEATHER_API_KEY}&q=${encodeURIComponent(
-      location
+      location,
     )}&dt=${date}`;
     const response = await fetch(url);
     if (!response.ok) {
@@ -104,10 +104,10 @@ app.post("/generate-schedule", async (req, res) => {
     const { soil, climate } = await generateLocationDefaults(
       country,
       region,
-      area
+      area,
     );
     console.log(
-      `For location ${area}, ${region}, ${country} -> Soil: ${soil}, Climate: ${climate}`
+      `For location ${area}, ${region}, ${country} -> Soil: ${soil}, Climate: ${climate}`,
     );
 
     // --- Build Gemini Schedule Prompt ---
@@ -442,7 +442,7 @@ Generate the JSON output:`;
       if (!impactsData.impacts || !Array.isArray(impactsData.impacts)) {
         console.error(
           "Gemini response for impacts is not in the expected format:",
-          impactsData
+          impactsData,
         );
         // Provide a default fallback if parsing is okay but structure is wrong
         return res.json({
@@ -471,7 +471,7 @@ Generate the JSON output:`;
 app.post("/generate-expert-recommendation", async (req, res) => {
   console.log(
     "Received request body in /generate-expert-recommendation:",
-    req.body
+    req.body,
   );
   try {
     const { currentWeather } = req.body;
@@ -556,7 +556,7 @@ Generate the JSON output:`;
       ) {
         console.error(
           "Gemini response for expert recommendation is not in the expected format:",
-          recommendationData
+          recommendationData,
         );
         return res.json({
           tips: [
@@ -592,7 +592,7 @@ Generate the JSON output:`;
 app.post("/generate-general-weather-impacts", async (req, res) => {
   console.log(
     "Received request body in /generate-general-weather-impacts:",
-    req.body
+    req.body,
   );
   try {
     const { currentWeather } = req.body;
@@ -687,7 +687,7 @@ app.post("/generate-general-weather-impacts", async (req, res) => {
       if (!impactsData.impacts || !Array.isArray(impactsData.impacts)) {
         console.error(
           "Gemini response for general impacts is not in the expected format:",
-          impactsData
+          impactsData,
         );
         return res.json({
           impacts: ["Could not determine general impacts from AI analysis."],
@@ -704,7 +704,7 @@ app.post("/generate-general-weather-impacts", async (req, res) => {
   } catch (error) {
     console.error(
       "Error in /generate-general-weather-impacts endpoint:",
-      error
+      error,
     );
     res.status(500).json({
       error: "Failed to generate general weather impacts",
